@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
+import Footer from '../components/Footer/Footer'
 
 export default function WastePage() {
   const navigate = useNavigate()
@@ -132,13 +133,7 @@ export default function WastePage() {
 
       <BottomNavBar />
 
-      {/* Footer - Desktop */}
-      <footer className="hidden md:block w-full py-12 bg-slate-50 border-t border-slate-200">
-        <div className="flex flex-col md:flex-row-reverse justify-between items-center px-6 max-w-7xl mx-auto gap-4">
-          <div className="text-lg font-bold text-slate-800">StockSimple</div>
-          <p className="text-sm text-slate-500">© 2024 StockSimple - ניהול מלאי חכם</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

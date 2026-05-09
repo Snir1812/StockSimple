@@ -15,7 +15,7 @@ export default function BottomNavBar() {
           key={to}
           to={to}
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center ${isActive ? 'text-blue-700' : 'text-slate-400'}`
+            `flex flex-col items-center justify-center ${isActive ? 'text-primary-container' : 'text-slate-400'}`
           }
         >
           <span className="material-symbols-outlined">{icon}</span>

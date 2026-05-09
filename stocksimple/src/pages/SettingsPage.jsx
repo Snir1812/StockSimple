@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
+import Footer from '../components/Footer/Footer'
 
 const employees = [
   { name: 'ישראל ישראלי', role: 'מנהל ראשי', status: 'פעיל' },
@@ -28,18 +30,7 @@ export default function SettingsPage() {
     <div className="bg-surface text-on-surface">
       <SideNavBar />
 
-      {/* Top App Bar */}
-      <header className="sticky top-0 w-full h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md flex flex-row-reverse justify-between items-center px-4 md:pr-[256px] z-40">
-        <div className="flex items-center gap-3">
-          <span className="text-xl font-black text-blue-700">StockSimple</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="material-symbols-outlined text-slate-500 cursor-pointer">notifications</button>
-          <div className="w-8 h-8 rounded-full bg-blue-700 text-white flex items-center justify-center text-xs font-bold">
-            יש
-          </div>
-        </div>
-      </header>
+      <TopAppBar />
 
       <main className="min-h-screen pb-24 pt-8 px-4 md:pr-[264px] md:pl-8 max-w-7xl mx-auto">
         <div className="max-w-3xl mx-auto space-y-8">
@@ -179,12 +170,7 @@ export default function SettingsPage() {
 
       <BottomNavBar />
 
-      <footer className="w-full py-12 border-t border-slate-100 bg-slate-50 mt-12 md:pr-[240px]">
-        <div className="flex flex-col md:flex-row-reverse justify-between items-center px-6 max-w-7xl mx-auto gap-4 text-sm">
-          <div className="text-lg font-bold text-slate-800">StockSimple</div>
-          <p className="text-slate-500">© 2024 StockSimple - ניהול מלאי חכם</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

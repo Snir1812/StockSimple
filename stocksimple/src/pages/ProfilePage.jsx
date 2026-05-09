@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
+import Footer from '../components/Footer/Footer'
 import { useAuth } from '../context/AuthContext'
 
 export default function ProfilePage() {
@@ -25,20 +27,7 @@ export default function ProfilePage() {
     <div className="bg-background text-on-surface">
       <SideNavBar />
 
-      {/* Top App Bar */}
-      <header className="sticky top-0 w-full h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md flex flex-row-reverse justify-between items-center px-4 md:pr-[256px] z-40">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl font-bold text-blue-700">StockSimple</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="material-symbols-outlined text-slate-500 hover:text-blue-600 transition-colors cursor-pointer">
-            notifications
-          </button>
-          <div className="w-10 h-10 rounded-full bg-blue-100 overflow-hidden border border-slate-200 flex items-center justify-center text-blue-700 font-bold">
-            {user.initials}
-          </div>
-        </div>
-      </header>
+      <TopAppBar />
 
       <main className="md:pr-[240px] pb-24 min-h-screen">
         <div className="max-w-4xl mx-auto px-4 py-8">
@@ -159,12 +148,7 @@ export default function ProfilePage() {
 
       <BottomNavBar />
 
-      <footer className="bg-slate-50 w-full py-12 border-t border-slate-200 mt-auto md:pr-[240px]">
-        <div className="flex flex-col md:flex-row-reverse justify-between items-center px-6 max-w-7xl mx-auto gap-4 text-sm">
-          <div className="text-lg font-bold text-slate-800">StockSimple</div>
-          <p className="text-slate-500">© 2024 StockSimple - ניהול מלאי חכם</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

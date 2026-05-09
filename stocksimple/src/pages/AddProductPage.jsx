@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
+import Footer from '../components/Footer/Footer'
 
 export default function AddProductPage() {
   const navigate = useNavigate()
@@ -23,15 +24,7 @@ export default function AddProductPage() {
     <div className="bg-surface text-on-surface">
       <SideNavBar />
 
-      <header className="sticky top-0 w-full h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md flex flex-row-reverse justify-between items-center px-4 md:pr-[256px] z-40">
-        <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-slate-500 cursor-pointer">notifications</span>
-          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs">
-            יש
-          </div>
-        </div>
-        <h1 className="font-bold text-xl text-blue-700">StockSimple</h1>
-      </header>
+      <TopAppBar />
 
       <main className="md:pr-[240px] pb-24 min-h-screen">
         <div className="max-w-3xl mx-auto px-6 py-8">
@@ -183,14 +176,7 @@ export default function AddProductPage() {
 
       <BottomNavBar />
 
-      <footer className="hidden md:flex flex-col md:flex-row-reverse justify-between items-center px-6 max-w-7xl mx-auto gap-4 w-full py-12 border-t border-slate-200 bg-slate-50 text-slate-500 text-sm">
-        <div className="flex gap-6">
-          <button className="hover:text-slate-800 transition-all">תנאי השירות</button>
-          <button className="hover:text-slate-800 transition-all">מדיניות פרטיות</button>
-          <button className="hover:text-slate-800 transition-all">תמיכה</button>
-        </div>
-        <div className="text-slate-400">© 2024 StockSimple - ניהול מלאי חכם</div>
-      </footer>
+      <Footer />
     </div>
   )
 }

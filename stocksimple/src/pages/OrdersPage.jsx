@@ -1,6 +1,7 @@
 import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
+import Footer from '../components/Footer/Footer'
 
 const suppliers = [
   {
@@ -34,23 +35,7 @@ export default function OrdersPage() {
     <div className="bg-background text-on-background">
       <SideNavBar />
 
-      {/* Top App Bar */}
-      <header className="flex flex-row-reverse justify-between items-center px-4 md:pr-[256px] w-full z-40 sticky top-0 h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="flex items-center gap-3 flex-row-reverse">
-          <span className="text-xl font-black text-blue-700 md:hidden">StockSimple</span>
-          <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
-            <span className="material-symbols-outlined text-slate-500 text-[18px]">person</span>
-          </div>
-        </div>
-        <div className="flex-1 text-right pr-4">
-          <h2 className="font-bold text-lg">הזמנות וספקים</h2>
-        </div>
-        <div className="flex items-center">
-          <button className="material-symbols-outlined text-slate-500 hover:text-blue-600 transition-colors p-2">
-            notifications
-          </button>
-        </div>
-      </header>
+      <TopAppBar />
 
       <main className="md:pr-[240px] pb-32 pt-6 px-4 max-w-5xl mx-auto">
         {/* Header Actions */}
@@ -149,11 +134,7 @@ export default function OrdersPage() {
 
       <BottomNavBar />
 
-      <footer className="hidden md:block w-full py-12 border-t border-slate-100 bg-slate-50 mt-8">
-        <div className="flex flex-col md:flex-row-reverse justify-between items-center px-6 max-w-7xl mx-auto gap-4 md:pr-[256px]">
-          <p className="text-sm text-slate-500">© 2024 StockSimple - ניהול מלאי חכם</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

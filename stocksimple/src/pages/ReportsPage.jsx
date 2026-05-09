@@ -1,5 +1,7 @@
+import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
+import Footer from '../components/Footer/Footer'
 
 const summaryCards = [
   { label: 'סה״כ פחת', value: '₪14,250', trend: '+8.2% לעומת חודש שעבר', trendColor: 'text-red-600', trendIcon: 'trending_up' },
@@ -28,28 +30,7 @@ export default function ReportsPage() {
     <div className="bg-background text-on-surface">
       <SideNavBar />
 
-      {/* Top App Bar */}
-      <header className="flex flex-row-reverse justify-between items-center px-4 md:pr-[256px] w-full z-40 sticky top-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200">
-        <div className="flex flex-row-reverse items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-white">
-            <span className="material-symbols-outlined">person</span>
-          </div>
-          <h1 className="text-2xl font-black text-blue-700">דוחות וניתוח נתונים</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="material-symbols-outlined text-slate-500 hover:text-blue-600 transition-colors">notifications</button>
-          <div className="flex gap-2">
-            <button className="flex items-center gap-1 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-500 hover:bg-slate-50 transition-all">
-              <span className="material-symbols-outlined text-sm">download</span>
-              <span>Excel</span>
-            </button>
-            <button className="flex items-center gap-1 px-4 py-2 bg-blue-700 text-white rounded-xl text-sm hover:bg-blue-800 transition-all">
-              <span className="material-symbols-outlined text-sm">picture_as_pdf</span>
-              <span>ייצא PDF</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      <TopAppBar />
 
       <main className="md:pr-[240px] pb-24 p-4 md:p-8 max-w-7xl mx-auto w-full">
         {/* Date Selector Tabs */}
@@ -173,11 +154,7 @@ export default function ReportsPage() {
 
       <BottomNavBar />
 
-      <footer className="bg-slate-50 w-full py-12 border-t border-slate-200 mt-auto md:pr-[240px]">
-        <div className="flex flex-col md:flex-row-reverse justify-between items-center px-6 max-w-7xl mx-auto gap-4 text-sm">
-          <div className="text-slate-500">© 2024 StockSimple - ניהול מלאי חכם</div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

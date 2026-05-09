@@ -21,7 +21,7 @@ export default function DashboardPage() {
         <TopAppBar />
 
         {/* Hero */}
-        <section className="bg-blue-700 p-6 md:p-8 text-white">
+        <section className="bg-primary-container p-6 md:p-8 text-white">
           <div className="max-w-5xl mx-auto flex flex-col gap-1">
             <h1 className="text-2xl font-bold">שלום, {user.name} 👋</h1>
             <p className="text-base opacity-90">{user.business} - סניף מרכז</p>
@@ -34,9 +34,9 @@ export default function DashboardPage() {
             <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
               <div>
                 <p className="text-sm text-slate-500">פריטים במלאי</p>
-                <h2 className="text-2xl font-bold text-blue-700">1,284</h2>
+                <h2 className="text-2xl font-bold text-primary-container">1,284</h2>
               </div>
-              <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-700">
+              <div className="w-12 h-12 rounded-lg bg-primary-fixed flex items-center justify-center text-primary-container">
                 <span className="material-symbols-outlined">inventory_2</span>
               </div>
             </div>
@@ -52,7 +52,7 @@ export default function DashboardPage() {
             <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
               <div>
                 <p className="text-sm text-slate-500">ערך המלאי</p>
-                <h2 className="text-2xl font-bold text-blue-700">₪42,500</h2>
+                <h2 className="text-2xl font-bold text-primary-container">₪42,500</h2>
               </div>
               <div className="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center text-orange-700">
                 <span className="material-symbols-outlined">payments</span>
@@ -82,7 +82,7 @@ export default function DashboardPage() {
               </div>
               <Link
                 to="/waste"
-                className="w-full h-12 bg-red-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95"
+                className="w-full h-12 bg-error text-on-error rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95"
               >
                 <span className="material-symbols-outlined">delete_sweep</span>
                 דיווח פחת עכשיו
@@ -96,7 +96,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-slate-500">ישנן 3 תעודות הפצה שממתינות לאישורך לשליחה לספק.</p>
               </div>
               <div className="relative z-10 mt-8">
-                <Link to="/orders" className="text-blue-700 font-bold flex items-center gap-1 text-sm">
+                <Link to="/orders" className="text-primary-container font-bold flex items-center gap-1 text-sm">
                   לצפייה בתעודות
                   <span className="material-symbols-outlined text-sm">arrow_back</span>
                 </Link>
@@ -111,7 +111,7 @@ export default function DashboardPage() {
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center">
               <h3 className="text-lg font-bold text-slate-900">פעילות אחרונות</h3>
-              <Link to="/inventory" className="text-xs text-blue-700 hover:underline">הצג הכל</Link>
+              <Link to="/inventory" className="text-xs text-primary-container hover:underline">הצג הכל</Link>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-right border-collapse">
