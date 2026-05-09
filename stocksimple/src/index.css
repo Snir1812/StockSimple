@@ -1,0 +1,106 @@
+@import "tailwindcss";
+@import "./globals.css";
+
+@theme {
+  /* Colors - Tailwind v4 uses --color-* prefix */
+  --color-primary: #003fad;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1a56d6;
+  --color-on-primary-container: #d2daff;
+  --color-inverse-primary: #b4c5ff;
+  --color-primary-fixed: #dbe1ff;
+  --color-primary-fixed-dim: #b4c5ff;
+  --color-on-primary-fixed: #00174b;
+  --color-on-primary-fixed-variant: #003da9;
+
+  --color-secondary: #585f67;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #dce3ec;
+  --color-on-secondary-container: #5e656d;
+  --color-secondary-fixed: #dce3ec;
+  --color-secondary-fixed-dim: #c0c7d0;
+  --color-on-secondary-fixed: #151c23;
+  --color-on-secondary-fixed-variant: #40484f;
+
+  --color-tertiary: #822c00;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #a93c00;
+  --color-on-tertiary-container: #ffd1c1;
+  --color-tertiary-fixed: #ffdbce;
+  --color-tertiary-fixed-dim: #ffb599;
+  --color-on-tertiary-fixed: #370e00;
+  --color-on-tertiary-fixed-variant: #7f2b00;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-background: #faf8ff;
+  --color-on-background: #191b23;
+  --color-surface: #faf8ff;
+  --color-on-surface: #191b23;
+  --color-surface-variant: #e2e2ed;
+  --color-on-surface-variant: #434654;
+  --color-surface-bright: #faf8ff;
+  --color-surface-dim: #d9d9e4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f3fe;
+  --color-surface-container: #ededf8;
+  --color-surface-container-high: #e7e7f2;
+  --color-surface-container-highest: #e2e2ed;
+  --color-inverse-surface: #2e3038;
+  --color-inverse-on-surface: #f0f0fb;
+
+  --color-outline: #737686;
+  --color-outline-variant: #c3c6d7;
+  --color-surface-tint: #1654d4;
+
+  /* Font families - Tailwind v4 uses --font-* for font-{name} utilities */
+  --font-body: 'Rubik', sans-serif;
+  --font-h1: 'Rubik', sans-serif;
+  --font-h2: 'Rubik', sans-serif;
+  --font-caption: 'Rubik', sans-serif;
+
+  /* Font sizes - Tailwind v4 uses --text-* for text-{name} utilities */
+  --text-h1: 24px;
+  --text-h2: 18px;
+  --text-body: 16px;
+  --text-caption: 13px;
+
+  /* Border radius - --radius-* for rounded-{name} */
+  --radius-DEFAULT: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Rubik', sans-serif;
+  background-color: #faf8ff;
+  color: #191b23;
+  margin: 0;
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  user-select: none;
+  font-size: 24px;
+}
