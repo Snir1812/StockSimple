@@ -15,97 +15,41 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', fontFamily: "'Rubik', sans-serif" }}>
+    <div className="min-h-screen flex">
 
-      {/* ── Blue sidebar (right side in RTL — first child = rightmost) ── */}
-      <div
-        className="hidden lg:flex"
-        style={{
-          width: '38%',
-          flexShrink: 0,
-          backgroundColor: '#1d4ed8',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '48px 40px',
-          color: '#fff',
-          textAlign: 'center',
-        }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 96, opacity: 0.85, marginBottom: 24 }}>
-          inventory_2
-        </span>
-        <h3 style={{ fontSize: 28, fontWeight: 900, marginBottom: 16 }}>ניהול מלאי חכם</h3>
-        <p style={{ fontSize: 16, lineHeight: 1.7, opacity: 0.9, maxWidth: 280 }}>
+      {/* Blue sidebar — first child = rightmost in RTL flex */}
+      <div className="hidden lg:flex w-[38%] flex-shrink-0 bg-blue-700 flex-col items-center justify-center px-10 py-12 text-white text-center">
+        <span className="material-symbols-outlined text-[96px] opacity-[0.85] mb-6">inventory_2</span>
+        <h3 className="text-[28px] font-black mb-4">ניהול מלאי חכם</h3>
+        <p className="text-base leading-relaxed opacity-90 max-w-[280px]">
           עקוב אחרי רשרת האספקה שלך בזמן אמת ומנע חוסרים שיפגעו בעסק שלך.
         </p>
-        <div
-          style={{
-            marginTop: 40,
-            width: '100%',
-            height: 180,
-            borderRadius: 12,
-            background: 'rgba(255,255,255,0.12)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 72, opacity: 0.3 }}>warehouse</span>
+        <div className="mt-10 w-full h-[180px] rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
+          <span className="material-symbols-outlined text-[72px] opacity-30">warehouse</span>
         </div>
       </div>
 
-      {/* ── Form area (left side in RTL — second child = leftmost) ── */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f8fafc',
-          padding: '32px 24px',
-        }}
-      >
-        <div style={{ width: '100%', maxWidth: 420 }}>
+      {/* Form area — second child = leftmost in RTL flex */}
+      <div className="flex-1 flex items-center justify-center bg-slate-50 px-6 py-8">
+        <div className="w-full max-w-[420px]">
 
           {/* Logo */}
-          <div style={{ textAlign: 'center', marginBottom: 32 }}>
-            <div style={{ fontSize: 30, fontWeight: 900, color: '#1d4ed8', marginBottom: 6 }}>
-              StockSimple
-            </div>
-            <div style={{ fontSize: 14, color: '#64748b' }}>מערכת ניהול מלאי לעסקים קטנים</div>
+          <div className="text-center mb-8">
+            <div className="text-3xl font-black text-blue-700 mb-1.5">StockSimple</div>
+            <div className="text-sm text-slate-500">מערכת ניהול מלאי לעסקים קטנים</div>
           </div>
 
           {/* Card */}
-          <div
-            style={{
-              background: '#fff',
-              borderRadius: 16,
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-              padding: 32,
-            }}
-          >
-            <h2 style={{ fontSize: 18, fontWeight: 700, textAlign: 'center', marginBottom: 24, color: '#0f172a' }}>
-              התחברות למערכת
-            </h2>
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+            <h2 className="text-lg font-bold text-center text-slate-900 mb-6">התחברות למערכת</h2>
 
             {/* Email */}
-            <div style={{ marginBottom: 16 }}>
-              <label
-                htmlFor="email"
-                style={{ display: 'block', fontSize: 12, color: '#64748b', marginBottom: 6, fontWeight: 500 }}
-              >
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-xs text-slate-500 font-medium mb-1.5">
                 כתובת אימייל
               </label>
-              <div style={{ position: 'relative' }}>
-                <span
-                  className="material-symbols-outlined"
-                  style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 20, color: '#94a3b8' }}
-                >
-                  mail
-                </span>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">mail</span>
                 <input
                   dir="ltr"
                   id="email"
@@ -113,37 +57,21 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 48,
-                    paddingRight: 44,
-                    paddingLeft: 16,
-                    border: '1px solid #e2e8f0',
-                    borderRadius: 12,
-                    backgroundColor: '#f8fafc',
-                    fontSize: 15,
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
+                  className="w-full h-12 pr-10 pl-4 border border-slate-200 rounded-xl bg-slate-50 text-[15px] outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700 transition-all"
                 />
               </div>
             </div>
 
             {/* Password */}
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <label htmlFor="password" style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>סיסמה</label>
-                <Link to="/forgot-password" style={{ fontSize: 12, color: '#1d4ed8', textDecoration: 'none' }}>
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-1.5">
+                <label htmlFor="password" className="text-xs text-slate-500 font-medium">סיסמה</label>
+                <Link to="/forgot-password" className="text-xs text-blue-700 no-underline hover:underline">
                   שכחת סיסמה?
                 </Link>
               </div>
-              <div style={{ position: 'relative' }}>
-                <span
-                  className="material-symbols-outlined"
-                  style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 20, color: '#94a3b8' }}
-                >
-                  lock
-                </span>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">lock</span>
                 <input
                   dir="ltr"
                   id="password"
@@ -151,119 +79,62 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: 48,
-                    paddingRight: 44,
-                    paddingLeft: 16,
-                    border: '1px solid #e2e8f0',
-                    borderRadius: 12,
-                    backgroundColor: '#f8fafc',
-                    fontSize: 15,
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
+                  className="w-full h-12 pr-10 pl-4 border border-slate-200 rounded-xl bg-slate-50 text-[15px] outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700 transition-all"
                 />
               </div>
             </div>
 
             {/* Remember me */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <div className="flex items-center gap-2 mb-5">
               <input
                 id="remember"
                 type="checkbox"
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
-                style={{ width: 16, height: 16, accentColor: '#1d4ed8' }}
+                className="w-4 h-4 accent-blue-700"
               />
-              <label htmlFor="remember" style={{ fontSize: 13, color: '#64748b' }}>זכור אותי בדפדפן זה</label>
+              <label htmlFor="remember" className="text-[13px] text-slate-500">זכור אותי בדפדפן זה</label>
             </div>
 
             {/* Submit */}
             <button
               onClick={handleSubmit}
-              style={{
-                width: '100%',
-                height: 48,
-                backgroundColor: '#1d4ed8',
-                color: '#fff',
-                fontWeight: 700,
-                fontSize: 16,
-                borderRadius: 12,
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                fontFamily: "'Rubik', sans-serif",
-              }}
+              className="w-full h-12 bg-blue-700 text-white font-bold text-base rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 hover:bg-blue-800"
             >
               <span>התחבר</span>
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>login</span>
+              <span className="material-symbols-outlined text-[20px]">login</span>
             </button>
 
             {/* Divider */}
-            <div style={{ position: 'relative', margin: '24px 0' }}>
-              <div style={{ borderTop: '1px solid #e2e8f0' }} />
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  backgroundColor: '#fff',
-                  padding: '0 12px',
-                  fontSize: 12,
-                  color: '#94a3b8',
-                }}
-              >
+            <div className="relative my-6">
+              <div className="border-t border-slate-200" />
+              <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-xs text-slate-400">
                 או המשך עם
-              </div>
+              </span>
             </div>
 
-            {/* Social */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-              {[
-                { icon: 'G', label: 'Google' },
-                { label: 'SSO ארגוני', matIcon: 'corporate_fare' },
-              ].map(({ icon, label, matIcon }) => (
-                <button
-                  key={label}
-                  style={{
-                    height: 48,
-                    border: '1px solid #e2e8f0',
-                    borderRadius: 12,
-                    background: '#fff',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    fontSize: 14,
-                    fontFamily: "'Rubik', sans-serif",
-                    fontWeight: 500,
-                  }}
-                >
-                  {icon && <span style={{ fontWeight: 900, color: '#1d4ed8' }}>{icon}</span>}
-                  {matIcon && (
-                    <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#1d4ed8' }}>{matIcon}</span>
-                  )}
-                  {label}
-                </button>
-              ))}
+            {/* Social buttons */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <button className="h-12 border border-slate-200 rounded-xl bg-white flex items-center justify-center gap-2 text-sm font-medium cursor-pointer hover:bg-slate-50 transition-colors">
+                <span className="font-black text-blue-700">G</span>
+                Google
+              </button>
+              <button className="h-12 border border-slate-200 rounded-xl bg-white flex items-center justify-center gap-2 text-sm font-medium cursor-pointer hover:bg-slate-50 transition-colors">
+                <span className="material-symbols-outlined text-[20px] text-blue-700">corporate_fare</span>
+                SSO ארגוני
+              </button>
             </div>
 
             {/* Register link */}
-            <p style={{ textAlign: 'center', fontSize: 14, color: '#64748b' }}>
+            <p className="text-center text-sm text-slate-500">
               אין לך חשבון?{' '}
-              <Link to="/register" style={{ color: '#1d4ed8', fontWeight: 700, textDecoration: 'none' }}>
+              <Link to="/register" className="text-blue-700 font-bold no-underline hover:underline">
                 הירשם עכשיו
               </Link>
             </p>
           </div>
 
-          <p style={{ textAlign: 'center', fontSize: 12, color: '#94a3b8', marginTop: 24 }}>
+          <p className="text-center text-xs text-slate-400 mt-6">
             © 2024 StockSimple. כל הזכויות שמורות.
           </p>
         </div>

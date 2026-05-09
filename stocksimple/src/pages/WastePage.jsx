@@ -16,23 +16,7 @@ export default function WastePage() {
     <div className="bg-background text-on-surface">
       <SideNavBar />
 
-      <header className="sticky top-0 w-full h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md flex flex-row-reverse justify-between items-center px-4 md:pr-[256px] z-40">
-        <div className="flex items-center gap-3 flex-row-reverse">
-          <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-white">
-            <span className="material-symbols-outlined">person</span>
-          </div>
-          <h1 className="text-2xl font-black text-blue-700">StockSimple</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="material-symbols-outlined text-slate-500 hover:text-blue-600 transition-colors cursor-pointer">
-            notifications
-          </button>
-        </div>
-      </header>
-
-      <aside className="hidden md:flex flex-col fixed right-0 top-0 h-screen z-50 bg-white w-[240px] border-l border-slate-200">
-        <SideNavBar />
-      </aside>
+      <TopAppBar />
 
       <main className="md:pr-[240px] min-h-[calc(100vh-64px)] pb-24 md:pb-8">
         <div className="max-w-3xl mx-auto p-4 md:p-8">

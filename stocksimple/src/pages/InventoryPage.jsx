@@ -25,15 +25,7 @@ export default function InventoryPage() {
     <div className="bg-background text-on-background">
       <SideNavBar />
 
-      <header className="sticky top-0 w-full h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 z-40 flex flex-row-reverse justify-between items-center px-4 md:pr-[256px]">
-        <div className="flex items-center gap-3 flex-row-reverse">
-          <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border border-slate-300 flex items-center justify-center">
-            <span className="material-symbols-outlined text-slate-500">person</span>
-          </div>
-          <span className="material-symbols-outlined text-slate-500 hover:text-blue-600 transition-colors cursor-pointer">notifications</span>
-        </div>
-        <h2 className="text-xl font-black text-blue-700">רשימת מלאי</h2>
-      </header>
+      <TopAppBar />
 
       <main className="md:pr-[240px] pb-32 min-h-screen">
         {/* Search & Filter Bar */}
