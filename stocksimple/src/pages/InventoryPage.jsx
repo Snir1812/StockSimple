@@ -1,16 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { getStatus } from '../lib/inventory'
 import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
 import Badge from '../components/Badge/Badge'
-
-function getStatus(p) {
-  if (p.qty === 0) return 'error'
-  if (p.qty < p.min_qty) return 'warning'
-  return 'ok'
-}
 
 export default function InventoryPage() {
   const navigate = useNavigate()

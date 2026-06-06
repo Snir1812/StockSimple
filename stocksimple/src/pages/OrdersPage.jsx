@@ -1,26 +1,11 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { formatPhoneForWhatsApp, buildWhatsAppUrl } from '../lib/orders'
 import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
 import Footer from '../components/Footer/Footer'
-
-function formatPhoneForWhatsApp(phone) {
-  const digits = phone.replace(/\D/g, '')
-  if (digits.startsWith('972')) return digits
-  if (digits.startsWith('0')) return '972' + digits.slice(1)
-  return digits
-}
-
-function buildWhatsAppUrl(supplier, products) {
-  const lines = products
-    .map(p => `- ${p.name}: ${p.needed} ${p.unit}`)
-    .join('\n')
-  const message = `שלום,\nאני צריך להזמין:\n${lines}`
-  const phone = formatPhoneForWhatsApp(supplier.phone ?? '')
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
-}
 
 export default function OrdersPage() {
   const { session } = useAuth()
