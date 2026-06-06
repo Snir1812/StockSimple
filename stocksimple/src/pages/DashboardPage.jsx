@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
 import Footer from '../components/Footer/Footer'
-import { useAuth } from '../context/AuthContext'
+import StatCard from '../components/StatCard/StatCard'
 
 const recentActivity = [
   { product: 'מיכל שמן זית 3% (1 ליטר)', type: 'ביצוע פחת', qty: '6-', time: 'לפני 12 דק\'' },
@@ -13,6 +16,34 @@ const recentActivity = [
 
 export default function DashboardPage() {
   const { user } = useAuth()
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, qty, min_qty, unit')
+
+      if (error) {
+        setError('שגיאה בטעינת הנתונים. נסה לרענן את הדף.')
+      } else {
+        setProducts(data)
+      }
+      setLoading(false)
+    }
+    fetchProducts()
+  }, [])
+
+  const totalProducts = products.length
+  const shortageProducts = products.filter(p => p.qty === 0)
+  const warningProducts = products.filter(p => p.qty > 0 && p.qty < p.min_qty)
+  // Alert list: out-of-stock first, then low stock
+  const alertProducts = [
+    ...shortageProducts,
+    ...warningProducts,
+  ]
 
   return (
     <div className="bg-background text-on-surface">
@@ -23,63 +54,96 @@ export default function DashboardPage() {
         {/* Hero */}
         <section className="bg-primary-container p-6 md:p-8 text-white">
           <div className="max-w-5xl mx-auto flex flex-col gap-1">
-            <h1 className="text-2xl font-bold">שלום, {user.name} 👋</h1>
-            <p className="text-base opacity-90">{user.business} - סניף מרכז</p>
+            <h1 className="text-2xl font-bold">שלום, {user?.name} 👋</h1>
+            <p className="text-base opacity-90">{user?.business || 'העסק שלי'}</p>
           </div>
         </section>
 
         <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
+
+          {/* Error banner */}
+          {error && (
+            <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-center">
+              {error}
+            </div>
+          )}
+
           {/* Stats Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
-              <div>
-                <p className="text-sm text-slate-500">פריטים במלאי</p>
-                <h2 className="text-2xl font-bold text-primary-container">1,284</h2>
-              </div>
-              <div className="w-12 h-12 rounded-lg bg-primary-fixed flex items-center justify-center text-primary-container">
-                <span className="material-symbols-outlined">inventory_2</span>
-              </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 h-[88px] animate-pulse">
+                  <div className="h-3 w-24 bg-slate-100 rounded mb-3" />
+                  <div className="h-7 w-16 bg-slate-100 rounded" />
+                </div>
+              ))}
             </div>
-            <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
-              <div>
-                <p className="text-sm text-slate-500">הזמנות פתוחות</p>
-                <h2 className="text-2xl font-bold text-slate-600">12</h2>
-              </div>
-              <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
-                <span className="material-symbols-outlined">local_shipping</span>
-              </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <StatCard
+                label="סה״כ מוצרים"
+                value={totalProducts}
+                icon="inventory_2"
+                iconBg="bg-primary-fixed"
+                iconColor="text-primary-container"
+              />
+              <StatCard
+                label="חוסרים"
+                value={shortageProducts.length}
+                icon="remove_circle"
+                iconBg="bg-red-50"
+                iconColor="text-red-600"
+              />
+              <StatCard
+                label="אזהרות מלאי"
+                value={warningProducts.length}
+                icon="warning"
+                iconBg="bg-orange-50"
+                iconColor="text-orange-600"
+              />
             </div>
-            <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
-              <div>
-                <p className="text-sm text-slate-500">ערך המלאי</p>
-                <h2 className="text-2xl font-bold text-primary-container">₪42,500</h2>
-              </div>
-              <div className="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center text-orange-700">
-                <span className="material-symbols-outlined">payments</span>
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* Alerts + Quick Action */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Urgent Alerts */}
+
+            {/* Shortage Alerts */}
             <div className="lg:col-span-2 bg-red-50 text-red-900 rounded-xl p-6 border border-red-200 flex flex-col gap-4">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-red-600">warning</span>
                 <h3 className="text-lg font-bold text-red-600">מוצרים חסרים</h3>
               </div>
-              <div className="space-y-2">
-                {[
-                  { name: 'מיכל שמן 3% (1 ליטר)', label: 'חסר לחלוטין' },
-                  { name: 'כוסות חלמון L (תפוז 30)', label: '2 יח׳ נותרו' },
-                  { name: 'כוס חד פעמי פלסטיק', label: 'חסר לחלוטין' },
-                ].map((item, i) => (
-                  <div key={i} className="bg-white/40 p-3 rounded-lg flex justify-between items-center">
-                    <span className="font-medium text-sm">{item.name}</span>
-                    <span className="bg-red-600 text-white px-2 py-0.5 rounded text-xs font-bold">{item.label}</span>
-                  </div>
-                ))}
-              </div>
+
+              {loading ? (
+                <div className="space-y-2">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="bg-white/40 p-3 rounded-lg h-11 animate-pulse" />
+                  ))}
+                </div>
+              ) : alertProducts.length === 0 ? (
+                <div className="bg-white/40 p-4 rounded-lg text-center text-sm text-red-700/70">
+                  <span className="material-symbols-outlined text-2xl block mb-1">check_circle</span>
+                  אין חוסרים כרגע — המלאי תקין!
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {alertProducts.map(p => (
+                    <div key={p.id} className="bg-white/40 p-3 rounded-lg flex justify-between items-center">
+                      <span className="font-medium text-sm">{p.name}</span>
+                      {p.qty === 0 ? (
+                        <span className="bg-red-600 text-white px-2 py-0.5 rounded text-xs font-bold">
+                          חסר לחלוטין
+                        </span>
+                      ) : (
+                        <span className="bg-orange-500 text-white px-2 py-0.5 rounded text-xs font-bold">
+                          נותרו {p.qty} {p.unit}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <Link
                 to="/waste"
                 className="w-full h-12 bg-error text-on-error rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95"

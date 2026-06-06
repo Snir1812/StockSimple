@@ -1,16 +1,24 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 
 export default function LoginPage() {
-  const { login } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
-    login()
+  const handleSubmit = async () => {
+    setError('')
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    setLoading(false)
+    if (error) {
+      setError('כתובת האימייל או הסיסמה שגויים')
+      return
+    }
     navigate('/dashboard')
   }
 
@@ -42,6 +50,13 @@ export default function LoginPage() {
           {/* Card */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
             <h2 className="text-lg font-bold text-center text-slate-900 mb-6">התחברות למערכת</h2>
+
+            {/* Error banner */}
+            {error && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm text-center">
+                {error}
+              </div>
+            )}
 
             {/* Email */}
             <div className="mb-4">
@@ -79,6 +94,7 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                   className="w-full h-12 pr-10 pl-4 border border-slate-200 rounded-xl bg-slate-50 text-[15px] outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700 transition-all"
                 />
               </div>
@@ -99,10 +115,17 @@ export default function LoginPage() {
             {/* Submit */}
             <button
               onClick={handleSubmit}
-              className="w-full h-12 bg-blue-700 text-white font-bold text-base rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 hover:bg-blue-800"
+              disabled={loading}
+              className="w-full h-12 bg-blue-700 text-white font-bold text-base rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 hover:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <span>התחבר</span>
-              <span className="material-symbols-outlined text-[20px]">login</span>
+              {loading ? (
+                <span className="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+              ) : (
+                <>
+                  <span>התחבר</span>
+                  <span className="material-symbols-outlined text-[20px]">login</span>
+                </>
+              )}
             </button>
 
             {/* Divider */}

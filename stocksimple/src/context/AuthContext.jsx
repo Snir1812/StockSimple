@@ -1,25 +1,49 @@
-import { createContext, useContext, useState } from 'react'
-
-const defaultUser = {
-  name: 'ישראל ישראלי',
-  business: 'שיפודיית ישראל',
-  initials: 'יש',
-  role: 'admin',
-  email: 'israel.i@stocksimple.co.il',
-}
+import { createContext, useContext, useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(defaultUser)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+function getInitials(name) {
+  if (!name) return '?'
+  const parts = name.trim().split(/\s+/)
+  if (parts.length === 1) return parts[0][0].toUpperCase()
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
 
-  const login = () => setIsLoggedIn(true)
-  const logout = () => setIsLoggedIn(false)
+export function AuthProvider({ children }) {
+  const [session, setSession] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setLoading(false)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const isLoggedIn = !!session
+
+  const user = session
+    ? {
+        name: session.user.user_metadata?.full_name ?? session.user.email,
+        email: session.user.email,
+        initials: getInitials(session.user.user_metadata?.full_name ?? session.user.email),
+        role: session.user.user_metadata?.role ?? 'employee',
+        business: session.user.user_metadata?.businessName ?? '',
+      }
+    : null
+
+  const logout = () => supabase.auth.signOut()
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>
-      {children}
+    <AuthContext.Provider value={{ session, user, isLoggedIn, loading, logout }}>
+      {!loading && children}
     </AuthContext.Provider>
   )
 }

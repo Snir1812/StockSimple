@@ -1,16 +1,37 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 
 export default function RegisterPage() {
-  const { login } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ fullName: '', businessName: '', email: '', password: '', passwordConfirm: '' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
-  const handleSubmit = () => {
-    login()
+  const handleSubmit = async () => {
+    if (form.password !== form.passwordConfirm) {
+      setError('הסיסמאות אינן תואמות')
+      return
+    }
+    setError('')
+    setLoading(true)
+    const { error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        data: {
+          full_name: form.fullName,
+          businessName: form.businessName,
+        },
+      },
+    })
+    setLoading(false)
+    if (error) {
+      setError(error.message)
+      return
+    }
     navigate('/dashboard')
   }
 
@@ -30,6 +51,14 @@ export default function RegisterPage() {
           </div>
 
           <div className="px-6 pb-6 pt-4 space-y-4">
+
+            {/* Error banner */}
+            {error && (
+              <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm text-center">
+                {error}
+              </div>
+            )}
+
             {/* Full Name */}
             <div className="space-y-1">
               <label className="text-xs text-slate-500 block" htmlFor="fullName">שם מלא</label>
@@ -70,7 +99,7 @@ export default function RegisterPage() {
               <div className="relative flex items-center">
                 <span className="material-symbols-outlined absolute right-3 text-slate-400 text-[20px]">mail</span>
                 <input
-                  className="w-full h-12 pr-10 pl-4 border border-slate-200 rounded-lg bg-white focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition-all text-right"
+                  className="w-full h-12 pr-10 pl-4 border border-slate-200 rounded-lg bg-white focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition-all"
                   dir="ltr"
                   id="email"
                   name="email"
@@ -88,7 +117,7 @@ export default function RegisterPage() {
               <div className="relative flex items-center">
                 <span className="material-symbols-outlined absolute right-3 text-slate-400 text-[20px]">lock</span>
                 <input
-                  className="w-full h-12 pr-10 pl-4 border border-slate-200 rounded-lg bg-white focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition-all text-right"
+                  className="w-full h-12 pr-10 pl-4 border border-slate-200 rounded-lg bg-white focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition-all"
                   dir="ltr"
                   id="password"
                   name="password"
@@ -106,7 +135,7 @@ export default function RegisterPage() {
               <div className="relative flex items-center">
                 <span className="material-symbols-outlined absolute right-3 text-slate-400 text-[20px]">lock_reset</span>
                 <input
-                  className="w-full h-12 pr-10 pl-4 border border-slate-200 rounded-lg bg-white focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition-all text-right"
+                  className="w-full h-12 pr-10 pl-4 border border-slate-200 rounded-lg bg-white focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition-all"
                   dir="ltr"
                   id="passwordConfirm"
                   name="passwordConfirm"
@@ -130,9 +159,14 @@ export default function RegisterPage() {
             {/* Submit */}
             <button
               onClick={handleSubmit}
-              className="w-full h-12 bg-blue-700 text-white font-bold rounded-lg shadow-md active:scale-95 transition-all"
+              disabled={loading}
+              className="w-full h-12 bg-blue-700 text-white font-bold rounded-lg shadow-md active:scale-95 transition-all flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              צור חשבון
+              {loading ? (
+                <span className="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+              ) : (
+                'צור חשבון'
+              )}
             </button>
 
             {/* Back to Login */}
@@ -146,7 +180,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Decorative footer image area */}
+          {/* Decorative footer */}
           <div className="h-24 w-full relative overflow-hidden bg-slate-50 border-t border-slate-100 flex items-center justify-center">
             <span className="material-symbols-outlined text-slate-200 text-[80px]">warehouse</span>
             <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent"></div>

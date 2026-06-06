@@ -1,7 +1,14 @@
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 export default function TopAppBar() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/')
+  }
 
   return (
     <header className="sticky top-0 w-full h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md flex flex-row-reverse justify-between items-center px-4 md:pr-[256px] z-40">
@@ -13,8 +20,15 @@ export default function TopAppBar() {
           notifications
         </button>
         <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container font-bold text-xs">
-          {user.initials}
+          {user?.initials}
         </div>
+        <button
+          onClick={handleLogout}
+          title="התנתק"
+          className="material-symbols-outlined text-slate-500 hover:text-red-500 transition-colors cursor-pointer"
+        >
+          logout
+        </button>
       </div>
     </header>
   )
