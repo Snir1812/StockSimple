@@ -1,3 +1,49 @@
+const HF_URL = 'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1'
+const FETCH_TIMEOUT_MS = 10000
+
+function getFallbackSuggestion(productName) {
+  const name = productName.toLowerCase()
+  if (/ירק|עגבניה|מלפפון|חסה/.test(name)) return { category: 'ירקות', unit: 'ק"ג', minQty: 5 }
+  if (/לחם|פיתה|בגט/.test(name)) return { category: 'לחמניות', unit: 'יח\'', minQty: 10 }
+  if (/שמן|רוטב/.test(name)) return { category: 'יבש', unit: 'ליטר', minQty: 3 }
+  return { category: 'כללי', unit: 'יח\'', minQty: 5 }
+}
+
+async function fetchWithTimeout(url, options, timeoutMs) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(url, { ...options, signal: controller.signal })
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+async function callHuggingFace(prompt, apiKey) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      inputs: prompt,
+      parameters: { max_new_tokens: 200, return_full_text: false },
+    }),
+  }
+
+  let response = await fetchWithTimeout(HF_URL, options, FETCH_TIMEOUT_MS)
+
+  if (response.status === 503) {
+    const loadingBody = await response.text()
+    console.error(`[suggest-product] model loading (503), retrying in 3s: ${loadingBody}`)
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    response = await fetchWithTimeout(HF_URL, options, FETCH_TIMEOUT_MS)
+  }
+
+  return response
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' })
@@ -13,7 +59,8 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.HUGGINGFACE_API_KEY
   if (!apiKey) {
-    res.status(500).json({ error: 'Server is missing HUGGINGFACE_API_KEY' })
+    console.error('[suggest-product] Server is missing HUGGINGFACE_API_KEY')
+    res.status(200).json(getFallbackSuggestion(productName))
     return
   }
 
@@ -26,21 +73,12 @@ export default async function handler(req, res) {
 { "category": string, "unit": string, "minQty": number }`
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: { max_new_tokens: 200, return_full_text: false },
-      }),
-    })
+    const response = await callHuggingFace(prompt, apiKey)
 
     if (!response.ok) {
       const text = await response.text()
-      res.status(502).json({ error: `Hugging Face API error: ${text}` })
+      console.error(`[suggest-product] Hugging Face API error: status=${response.status} body=${text}`)
+      res.status(200).json(getFallbackSuggestion(productName))
       return
     }
 
@@ -48,13 +86,15 @@ export default async function handler(req, res) {
     const text = Array.isArray(data) ? data[0]?.generated_text ?? '' : data.generated_text ?? ''
     const match = text.match(/\{[\s\S]*\}/)
     if (!match) {
-      res.status(502).json({ error: 'No JSON found in AI response' })
+      console.error(`[suggest-product] No JSON found in AI response: ${text}`)
+      res.status(200).json(getFallbackSuggestion(productName))
       return
     }
 
     const suggestion = JSON.parse(match[0])
     res.status(200).json(suggestion)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(`[suggest-product] Unexpected error: ${err.name === 'AbortError' ? 'request timed out' : err.message}`)
+    res.status(200).json(getFallbackSuggestion(productName))
   }
 }
