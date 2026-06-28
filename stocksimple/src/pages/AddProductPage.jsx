@@ -37,6 +37,10 @@ export default function AddProductPage() {
   const [addingCategory, setAddingCategory] = useState(false)
   const [addingSupplier, setAddingSupplier] = useState(false)
 
+  const [aiSuggestion, setAiSuggestion] = useState(null)
+  const [loadingSuggestion, setLoadingSuggestion] = useState(false)
+  const [suggestionError, setSuggestionError] = useState('')
+
   useEffect(() => {
     if (!userId) return
     async function fetchData() {
@@ -67,6 +71,61 @@ export default function AddProductPage() {
     }
     fetchData()
   }, [userId, session])
+
+  useEffect(() => {
+    const name = form.name.trim()
+
+    const timer = setTimeout(async () => {
+      if (!name) {
+        setAiSuggestion(null)
+        setSuggestionError('')
+        setLoadingSuggestion(false)
+        return
+      }
+
+      setLoadingSuggestion(true)
+      setSuggestionError('')
+      try {
+        const res = await fetch('/api/suggest-product', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ productName: name, categories: categories.map(c => c.name) }),
+        })
+        if (!res.ok) throw new Error('שגיאה בקבלת הצעה')
+        const suggestion = await res.json()
+        setAiSuggestion(suggestion)
+      } catch {
+        setAiSuggestion(null)
+        setSuggestionError('לא ניתן לקבל הצעת AI כרגע')
+      } finally {
+        setLoadingSuggestion(false)
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [form.name, categories])
+
+  const handleApplySuggestion = () => {
+    if (!aiSuggestion) return
+
+    const matchedCategory = categories.find(
+      c => c.name.trim().toLowerCase() === (aiSuggestion.category || '').trim().toLowerCase()
+    )
+
+    if (matchedCategory) {
+      setAddingCategory(false)
+      setForm(f => ({ ...f, category_id: matchedCategory.id }))
+    } else if (aiSuggestion.category) {
+      setAddingCategory(true)
+      setNewCategoryName(aiSuggestion.category)
+    }
+
+    setForm(f => ({
+      ...f,
+      unit: aiSuggestion.unit || f.unit,
+      min_qty: aiSuggestion.minQty ?? f.min_qty,
+    }))
+  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -200,6 +259,35 @@ export default function AddProductPage() {
                     value={form.name}
                     onChange={handleChange}
                   />
+
+                  {loadingSuggestion && (
+                    <div dir="rtl" className="flex items-center gap-2 text-xs text-blue-600">
+                      <span className="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+                      מחפש הצעת AI...
+                    </div>
+                  )}
+
+                  {!loadingSuggestion && aiSuggestion && (
+                    <div
+                      dir="rtl"
+                      className="p-3 rounded-lg bg-blue-50 border border-blue-200 text-sm text-blue-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-right"
+                    >
+                      <span>
+                        ✨ הצעת AI: קטגוריה: {aiSuggestion.category} | יחידה: {aiSuggestion.unit} | מינימום: {aiSuggestion.minQty}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleApplySuggestion}
+                        className="text-xs font-bold bg-blue-700 text-white px-3 py-1.5 rounded-lg hover:bg-blue-800 transition-colors self-start sm:self-auto shrink-0"
+                      >
+                        החל הכל
+                      </button>
+                    </div>
+                  )}
+
+                  {!loadingSuggestion && suggestionError && (
+                    <p dir="rtl" className="text-xs text-red-500">{suggestionError}</p>
+                  )}
                 </div>
 
                 {/* SKU */}
