@@ -30,6 +30,11 @@ export default function AddProductPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  const [newCategoryName, setNewCategoryName] = useState('')
+  const [newSupplierName, setNewSupplierName] = useState('')
+  const [addingCategory, setAddingCategory] = useState(false)
+  const [addingSupplier, setAddingSupplier] = useState(false)
+
   useEffect(() => {
     if (!userId) return
     async function fetchData() {
@@ -67,14 +72,48 @@ export default function AddProductPage() {
     setSaving(true)
     setError('')
 
+    const usingNewCategory = (categories.length === 0 || addingCategory) && newCategoryName.trim()
+    const usingNewSupplier = (suppliers.length === 0 || addingSupplier) && newSupplierName.trim()
+
+    let categoryId = form.category_id || null
+    let supplierId = form.supplier_id || null
+
+    if (usingNewCategory) {
+      const { data, error: catError } = await supabase
+        .from('categories')
+        .insert({ name: newCategoryName.trim(), business_id: businessId })
+        .select('id')
+        .single()
+      if (catError) {
+        setSaving(false)
+        setError(`שגיאה ביצירת קטגוריה: ${catError.message}`)
+        return
+      }
+      categoryId = data.id
+    }
+
+    if (usingNewSupplier) {
+      const { data, error: supError } = await supabase
+        .from('suppliers')
+        .insert({ name: newSupplierName.trim(), business_id: businessId })
+        .select('id')
+        .single()
+      if (supError) {
+        setSaving(false)
+        setError(`שגיאה ביצירת ספק: ${supError.message}`)
+        return
+      }
+      supplierId = data.id
+    }
+
     const { error: insertError } = await supabase.from('products').insert({
       name: form.name.trim(),
       sku: form.sku.trim() || null,
       qty: Number(form.qty),
       min_qty: Number(form.min_qty) || 5,
       unit: form.unit.trim() || 'יח\'',
-      category_id: form.category_id || null,
-      supplier_id: form.supplier_id || null,
+      category_id: categoryId,
+      supplier_id: supplierId,
       business_id: businessId,
     })
 
@@ -161,18 +200,46 @@ export default function AddProductPage() {
                   <label className="text-xs text-slate-500">קטגוריה</label>
                   {loadingData ? (
                     <div className="h-12 rounded-lg bg-slate-100 animate-pulse" />
+                  ) : categories.length === 0 || addingCategory ? (
+                    <>
+                      <input
+                        className="w-full h-12 px-4 rounded-lg border border-slate-200 focus:border-blue-700 focus:ring-2 focus:ring-blue-700/20 text-right outline-none"
+                        type="text"
+                        placeholder="הכנס שם קטגוריה חדשה"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                      />
+                      {categories.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => { setAddingCategory(false); setNewCategoryName('') }}
+                          className="text-xs text-blue-700 self-start hover:underline"
+                        >
+                          בחר מהרשימה
+                        </button>
+                      )}
+                    </>
                   ) : (
-                    <select
-                      className="w-full h-12 px-4 rounded-lg border border-slate-200 bg-white focus:border-blue-700 focus:ring-2 focus:ring-blue-700/20 text-right outline-none appearance-none"
-                      name="category_id"
-                      value={form.category_id}
-                      onChange={handleChange}
-                    >
-                      <option value="">בחר קטגוריה</option>
-                      {categories.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                    </select>
+                    <>
+                      <select
+                        className="w-full h-12 px-4 rounded-lg border border-slate-200 bg-white focus:border-blue-700 focus:ring-2 focus:ring-blue-700/20 text-right outline-none appearance-none"
+                        name="category_id"
+                        value={form.category_id}
+                        onChange={handleChange}
+                      >
+                        <option value="">בחר קטגוריה</option>
+                        {categories.map(c => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setAddingCategory(true)}
+                        className="text-xs text-blue-700 self-start hover:underline"
+                      >
+                        + הוסף חדש
+                      </button>
+                    </>
                   )}
                 </div>
 
@@ -181,18 +248,46 @@ export default function AddProductPage() {
                   <label className="text-xs text-slate-500">ספק</label>
                   {loadingData ? (
                     <div className="h-12 rounded-lg bg-slate-100 animate-pulse" />
+                  ) : suppliers.length === 0 || addingSupplier ? (
+                    <>
+                      <input
+                        className="w-full h-12 px-4 rounded-lg border border-slate-200 focus:border-blue-700 focus:ring-2 focus:ring-blue-700/20 text-right outline-none"
+                        type="text"
+                        placeholder="הכנס שם ספק חדש"
+                        value={newSupplierName}
+                        onChange={(e) => setNewSupplierName(e.target.value)}
+                      />
+                      {suppliers.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => { setAddingSupplier(false); setNewSupplierName('') }}
+                          className="text-xs text-blue-700 self-start hover:underline"
+                        >
+                          בחר מהרשימה
+                        </button>
+                      )}
+                    </>
                   ) : (
-                    <select
-                      className="w-full h-12 px-4 rounded-lg border border-slate-200 bg-white focus:border-blue-700 focus:ring-2 focus:ring-blue-700/20 text-right outline-none appearance-none"
-                      name="supplier_id"
-                      value={form.supplier_id}
-                      onChange={handleChange}
-                    >
-                      <option value="">בחר ספק</option>
-                      {suppliers.map(s => (
-                        <option key={s.id} value={s.id}>{s.name}</option>
-                      ))}
-                    </select>
+                    <>
+                      <select
+                        className="w-full h-12 px-4 rounded-lg border border-slate-200 bg-white focus:border-blue-700 focus:ring-2 focus:ring-blue-700/20 text-right outline-none appearance-none"
+                        name="supplier_id"
+                        value={form.supplier_id}
+                        onChange={handleChange}
+                      >
+                        <option value="">בחר ספק</option>
+                        {suppliers.map(s => (
+                          <option key={s.id} value={s.id}>{s.name}</option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setAddingSupplier(true)}
+                        className="text-xs text-blue-700 self-start hover:underline"
+                      >
+                        + הוסף חדש
+                      </button>
+                    </>
                   )}
                 </div>
 
