@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { ensureUserProfile } from '../lib/profile'
 import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
@@ -16,6 +17,7 @@ export default function AddProductPage() {
   const [suppliers, setSuppliers] = useState([])
   const [businessId, setBusinessId] = useState(null)
   const [loadingData, setLoadingData] = useState(true)
+  const [creatingProfile, setCreatingProfile] = useState(false)
 
   const [form, setForm] = useState({
     name: '',
@@ -41,15 +43,30 @@ export default function AddProductPage() {
       const [categoriesRes, suppliersRes, profileRes] = await Promise.all([
         supabase.from('categories').select('id, name').order('name'),
         supabase.from('suppliers').select('id, name').order('name'),
-        supabase.from('profiles').select('business_id').eq('user_id', userId).single(),
+        supabase.from('profiles').select('business_id').eq('user_id', userId).maybeSingle(),
       ])
       if (!categoriesRes.error) setCategories(categoriesRes.data)
       if (!suppliersRes.error) setSuppliers(suppliersRes.data)
-      if (!profileRes.error) setBusinessId(profileRes.data.business_id)
+
+      if (!profileRes.error && profileRes.data?.business_id) {
+        setBusinessId(profileRes.data.business_id)
+        setLoadingData(false)
+        return
+      }
+
       setLoadingData(false)
+      setCreatingProfile(true)
+      try {
+        const newBusinessId = await ensureUserProfile(session.user)
+        setBusinessId(newBusinessId)
+      } catch (err) {
+        setError(`שגיאה ביצירת פרופיל העסק: ${err.message}`)
+      } finally {
+        setCreatingProfile(false)
+      }
     }
     fetchData()
-  }, [userId])
+  }, [userId, session])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -152,6 +169,14 @@ export default function AddProductPage() {
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-right">
               {error}
+            </div>
+          )}
+
+          {/* Creating profile/business banner */}
+          {creatingProfile && (
+            <div className="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-sm text-right flex items-center justify-end gap-2">
+              <span>מגדיר את חשבון העסק שלך, אנא המתן...</span>
+              <span className="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
             </div>
           )}
 
@@ -380,7 +405,7 @@ export default function AddProductPage() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={saving || loadingData}
+                disabled={saving || loadingData || creatingProfile}
                 className="flex-1 md:flex-initial md:px-12 h-12 bg-blue-700 text-white rounded-xl font-bold hover:bg-blue-800 transition-all active:scale-95 shadow-md flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {saving ? (

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { ensureUserProfile } from '../lib/profile'
 
 const AuthContext = createContext(null)
 
@@ -18,10 +19,12 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setLoading(false)
+      if (session?.user) ensureUserProfile(session.user).catch(console.error)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
+      if (session?.user) ensureUserProfile(session.user).catch(console.error)
     })
 
     return () => subscription.unsubscribe()
