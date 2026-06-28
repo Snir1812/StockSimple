@@ -11,9 +11,9 @@ export default async function handler(req, res) {
     return
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.HUGGINGFACE_API_KEY
   if (!apiKey) {
-    res.status(500).json({ error: 'Server is missing ANTHROPIC_API_KEY' })
+    res.status(500).json({ error: 'Server is missing HUGGINGFACE_API_KEY' })
     return
   }
 
@@ -26,28 +26,26 @@ export default async function handler(req, res) {
 { "category": string, "unit": string, "minQty": number }`
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       method: 'POST',
       headers: {
-        'content-type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 200,
-        messages: [{ role: 'user', content: prompt }],
+        inputs: prompt,
+        parameters: { max_new_tokens: 200, return_full_text: false },
       }),
     })
 
     if (!response.ok) {
       const text = await response.text()
-      res.status(502).json({ error: `Anthropic API error: ${text}` })
+      res.status(502).json({ error: `Hugging Face API error: ${text}` })
       return
     }
 
     const data = await response.json()
-    const text = data.content?.[0]?.text ?? ''
+    const text = Array.isArray(data) ? data[0]?.generated_text ?? '' : data.generated_text ?? ''
     const match = text.match(/\{[\s\S]*\}/)
     if (!match) {
       res.status(502).json({ error: 'No JSON found in AI response' })
