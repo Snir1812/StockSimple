@@ -2,21 +2,27 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { groupProductsBySupplier } from '../lib/orders'
 import TopAppBar from '../components/TopAppBar/TopAppBar'
 import SideNavBar from '../components/SideNavBar/SideNavBar'
 import BottomNavBar from '../components/BottomNavBar/BottomNavBar'
 import Footer from '../components/Footer/Footer'
 import StatCard from '../components/StatCard/StatCard'
 
-const recentActivity = [
-  { product: 'מיכל שמן זית 3% (1 ליטר)', type: 'ביצוע פחת', qty: '6-', time: 'לפני 12 דק\'' },
-  { product: 'קופסת קרטון 1.5 ליטר (תפוז 30)', type: 'ביצוע פחת', qty: '2-', time: 'לפני שעה' },
-  { product: 'כוס חד פעמי פלסטיק', type: 'קבלת מלאי', qty: '48+', time: 'לפני 3 שעות' },
-]
+function formatRelativeTime(dateStr) {
+  const minutes = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000)
+  if (minutes < 1) return 'הרגע'
+  if (minutes < 60) return `לפני ${minutes} דק'`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `לפני ${hours} שעות`
+  return `לפני ${Math.floor(hours / 24)} ימים`
+}
 
 export default function DashboardPage() {
   const { user } = useAuth()
   const [products, setProducts] = useState([])
+  const [pendingSupplierCount, setPendingSupplierCount] = useState(0)
+  const [recentActivity, setRecentActivity] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -24,16 +30,29 @@ export default function DashboardPage() {
     async function fetchProducts() {
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, qty, min_qty, unit')
+        .select('id, name, qty, min_qty, unit, supplier_id, suppliers(id, name, phone)')
 
       if (error) {
         setError('שגיאה בטעינת הנתונים. נסה לרענן את הדף.')
       } else {
         setProducts(data)
+        setPendingSupplierCount(groupProductsBySupplier(data).length)
       }
       setLoading(false)
     }
     fetchProducts()
+  }, [])
+
+  useEffect(() => {
+    async function fetchRecentActivity() {
+      const { data, error } = await supabase
+        .from('waste_reports')
+        .select('id, qty, created_at, products(name, unit)')
+        .order('created_at', { ascending: false })
+        .limit(5)
+      if (!error) setRecentActivity(data)
+    }
+    fetchRecentActivity()
   }, [])
 
   const totalProducts = products.length
@@ -157,7 +176,11 @@ export default function DashboardPage() {
             <div className="bg-white border border-slate-200 rounded-xl p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group">
               <div className="relative z-10">
                 <h3 className="text-lg font-bold mb-2 text-slate-900">הזמנת ספקים</h3>
-                <p className="text-sm text-slate-500">ישנן 3 תעודות הפצה שממתינות לאישורך לשליחה לספק.</p>
+                <p className="text-sm text-slate-500">
+                  {pendingSupplierCount > 0
+                    ? `ישנם ${pendingSupplierCount} ספקים עם מוצרים שממתינים להזמנה.`
+                    : 'אין כרגע מוצרים שממתינים להזמנה מספקים.'}
+                </p>
               </div>
               <div className="relative z-10 mt-8">
                 <Link to="/orders" className="text-primary-container font-bold flex items-center gap-1 text-sm">
@@ -188,18 +211,22 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="text-sm divide-y divide-slate-50">
-                  {recentActivity.map((row, i) => (
-                    <tr key={i}>
-                      <td className="p-4 font-medium text-slate-900">{row.product}</td>
-                      <td className="p-4">
-                        <span className={row.qty.startsWith('+') ? 'text-blue-700' : 'text-red-600'}>
-                          {row.type}
-                        </span>
-                      </td>
-                      <td className="p-4">{row.qty}</td>
-                      <td className="p-4 text-slate-400">{row.time}</td>
+                  {recentActivity.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="p-6 text-center text-slate-400">אין פעילות אחרונה</td>
                     </tr>
-                  ))}
+                  ) : (
+                    recentActivity.map(row => (
+                      <tr key={row.id}>
+                        <td className="p-4 font-medium text-slate-900">{row.products?.name ?? 'מוצר שנמחק'}</td>
+                        <td className="p-4">
+                          <span className="text-red-600">ביצוע פחת</span>
+                        </td>
+                        <td className="p-4">-{row.qty} {row.products?.unit ?? ''}</td>
+                        <td className="p-4 text-slate-400">{formatRelativeTime(row.created_at)}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
