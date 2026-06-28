@@ -34,6 +34,7 @@ export default function AddProductPage() {
 
   const [newCategoryName, setNewCategoryName] = useState('')
   const [newSupplierName, setNewSupplierName] = useState('')
+  const [newSupplierPhone, setNewSupplierPhone] = useState('')
   const [addingCategory, setAddingCategory] = useState(false)
   const [addingSupplier, setAddingSupplier] = useState(false)
 
@@ -171,7 +172,7 @@ export default function AddProductPage() {
     if (usingNewSupplier) {
       const { data, error: supError } = await supabase
         .from('suppliers')
-        .insert({ name: newSupplierName.trim(), business_id: businessId })
+        .insert({ name: newSupplierName.trim(), phone: newSupplierPhone.trim() || null, business_id: businessId })
         .select('id')
         .single()
       if (supError) {
@@ -370,10 +371,18 @@ export default function AddProductPage() {
                         value={newSupplierName}
                         onChange={(e) => setNewSupplierName(e.target.value)}
                       />
+                      <label className="text-xs text-slate-500">טלפון ספק</label>
+                      <input
+                        className="w-full h-12 px-4 rounded-lg border border-slate-200 focus:border-blue-700 focus:ring-2 focus:ring-blue-700/20 text-right outline-none"
+                        type="tel"
+                        placeholder="050-1234567"
+                        value={newSupplierPhone}
+                        onChange={(e) => setNewSupplierPhone(e.target.value)}
+                      />
                       {suppliers.length > 0 && (
                         <button
                           type="button"
-                          onClick={() => { setAddingSupplier(false); setNewSupplierName('') }}
+                          onClick={() => { setAddingSupplier(false); setNewSupplierName(''); setNewSupplierPhone('') }}
                           className="text-xs text-blue-700 self-start hover:underline"
                         >
                           בחר מהרשימה
